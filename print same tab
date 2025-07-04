@@ -1,0 +1,52 @@
+import React, { useRef } from 'react';
+
+const PrintComponent = () => {
+  const printRef = useRef();
+
+  const handlePrint = () => {
+    const content = printRef.current;
+    if (!content) return;
+
+    // Get styles
+    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map(style => style.outerHTML)
+      .join('');
+
+    const html = `
+      <html>
+        <head>
+          <title>Print</title>
+          ${styles}
+        </head>
+        <body>
+          ${content.innerHTML}
+          <script>
+            window.onload = function() {
+              window.print();
+              window.onafterprint = function() {
+                window.location.href = document.referrer || '/';
+              };
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_self');
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
+  return (
+    <div>
+      <div ref={printRef}>
+        <h1>Invoice</h1>
+        <p>This is your printable content.</p>
+      </div>
+      <button onClick={handlePrint}>Print in Same Tab</button>
+    </div>
+  );
+};
+
+export default PrintComponent;
