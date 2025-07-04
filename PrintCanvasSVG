@@ -42,11 +42,12 @@ const PrintCanvasAndSVG = () => {
           ${clone.innerHTML}
           <script>
             window.onload = function () {
-              window.print();
+              setTimeout(() => {
+                window.print();
+              }, 300);
               window.onafterprint = function () {
                 window.close();
               };
-            };
           </script>
         </body>
       </html>
