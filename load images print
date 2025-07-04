@@ -1,0 +1,81 @@
+import React, { useRef } from 'react';
+
+const PrintWithImages = () => {
+  const printRef = useRef();
+
+  const handlePrint = () => {
+    const content = printRef.current;
+    if (!content) return;
+
+    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+      .map(style => style.outerHTML)
+      .join('');
+
+    const html = `
+      <html>
+        <head>
+          <title>Print</title>
+          ${styles}
+          <style>
+            @media print {
+              .no-print {
+                display: none !important;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${content.innerHTML}
+          <script>
+            window.onload = function() {
+              const images = document.images;
+              let loaded = 0;
+
+              if (images.length === 0) {
+                triggerPrint();
+              }
+
+              for (let i = 0; i < images.length; i++) {
+                if (images[i].complete) {
+                  loaded++;
+                  if (loaded === images.length) triggerPrint();
+                } else {
+                  images[i].onload = images[i].onerror = function () {
+                    loaded++;
+                    if (loaded === images.length) triggerPrint();
+                  };
+                }
+              }
+
+              function triggerPrint() {
+                window.print();
+                window.onafterprint = function () {
+                  window.close();
+                };
+              }
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
+  return (
+    <div>
+      <div ref={printRef}>
+        <h1>Printable Section</h1>
+        <img src="https://via.placeholder.com/150" alt="Sample" />
+        <button className="print-this">This Button Will Print</button>
+        <button className="no-print">Don't Print Me</button>
+      </div>
+      <button onClick={handlePrint}>Print</button>
+    </div>
+  );
+};
+
+export default PrintWithImages;
