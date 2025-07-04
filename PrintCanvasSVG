@@ -40,15 +40,25 @@ const PrintCanvasAndSVG = () => {
         </head>
         <body>
           ${clone.innerHTML}
-          <script>
-            window.onload = function () {
-              setTimeout(() => {
-                window.print();
-              }, 300);
-              window.onafterprint = function () {
-                window.close();
-              };
-          </script>
+         <script>
+  window.onload = function () {
+      window.print();
+    window.onafterprint = function () {
+      try {
+        window.close();
+      } catch (e) {
+        document.body.innerHTML += '<p>Please close this tab manually.</p>';
+      }
+    };
+
+    // Extra fallback: close after 5 seconds
+    setTimeout(() => {
+      try {
+        window.close();
+      } catch (e) {}
+    }, 5000);
+  };
+</script>
         </body>
       </html>
     `;
