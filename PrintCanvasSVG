@@ -42,21 +42,30 @@ const PrintCanvasAndSVG = () => {
           ${clone.innerHTML}
          <script>
   window.onload = function () {
-      window.print();
-    window.onafterprint = function () {
-      try {
-        window.close();
-      } catch (e) {
-        document.body.innerHTML += '<p>Please close this tab manually.</p>';
-      }
-    };
+      setTimeout(() => {
+    console.log('🖨️ Calling print...');
+    window.print();
+  }, 300);
 
-    // Extra fallback: close after 5 seconds
-    setTimeout(() => {
-      try {
-        window.close();
-      } catch (e) {}
-    }, 5000);
+  const handleAfterPrint = () => {
+    afterPrintCalled = true;
+    console.log('✅ onafterprint fired');
+    window.close();
+  };
+
+  window.onafterprint = handleAfterPrint;
+
+  const fallback = setTimeout(() => {
+    if (!afterPrintCalled) {
+      console.warn('⚠️ onafterprint did NOT fire');
+    }
+  }, 7000);
+
+  return () => {
+    window.onafterprint = null;
+    clearTimeout(fallback);
+  };
+}, []);
   };
 </script>
         </body>
