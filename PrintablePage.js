@@ -9,12 +9,16 @@ const PrintablePage = () => {
     if (!content) return;
 
     const printWindow = window.open("", "", "width=800,height=600");
+     const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    .map(style => style.outerHTML)
+    .join('');
 
     if (printWindow) {
       printWindow.document.write(`
         <html>
           <head>
             <title>Print Preview</title>
+             ${styles}
             <style>
               @media print {
                 @page {
