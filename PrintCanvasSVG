@@ -1,0 +1,53 @@
+import React, { useRef } from 'react';
+
+const PrintCanvasSVG = () => {
+  const containerRef = useRef();
+
+  const handlePrint = () => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Clone container and replace canvas with images as above
+    const clone = container.cloneNode(true);
+
+    // Canvas -> image
+    const canvases = clone.querySelectorAll('canvas');
+    canvases.forEach(canvas => {
+      const img = document.createElement('img');
+      img.src = canvas.toDataURL();
+      img.style.width = canvas.style.width || canvas.width + 'px';
+      img.style.height = canvas.style.height || canvas.height + 'px';
+      canvas.parentNode.replaceChild(img, canvas);
+    });
+
+    const html = `
+      <html>
+        <head><title>Print</title></head>
+        <body>${clone.outerHTML}
+          <script>
+            window.onload = function() {
+              window.print();
+              window.onafterprint = () => window.close();
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
+  return (
+    <div>
+      <div ref={containerRef} id="print-container" style={{ padding: 20 }}>
+        {/* Your Canvas and SVG content */}
+      </div>
+      <button onClick={handlePrint}>Print Canvas & SVG</button>
+    </div>
+  );
+};
+
+export default PrintCanvasSVG;
