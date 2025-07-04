@@ -1,34 +1,52 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
+import QRCode from 'qrcode.react';
 
-const PrintCanvasSVG = () => {
+const PrintCanvasAndSVG = () => {
   const containerRef = useRef();
 
   const handlePrint = () => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Clone container and replace canvas with images as above
+    // Clone the container
     const clone = container.cloneNode(true);
 
-    // Canvas -> image
-    const canvases = clone.querySelectorAll('canvas');
-    canvases.forEach(canvas => {
+    // Handle Canvas (QR Code)
+    const canvases = container.querySelectorAll('canvas');
+    const clonedCanvases = clone.querySelectorAll('canvas');
+
+    canvases.forEach((canvas, i) => {
       const img = document.createElement('img');
       img.src = canvas.toDataURL();
       img.style.width = canvas.style.width || canvas.width + 'px';
       img.style.height = canvas.style.height || canvas.height + 'px';
-      canvas.parentNode.replaceChild(img, canvas);
+
+      clonedCanvases[i].parentNode.replaceChild(img, clonedCanvases[i]);
     });
+
+    // You can also style the SVG or leave it as is
 
     const html = `
       <html>
-        <head><title>Print</title></head>
-        <body>${clone.outerHTML}
-          <script>
-            window.onload = function() {
-              window.print();
-              window.onafterprint = () => window.close();
+        <head>
+          <title>Print QR and SVG</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              text-align: center;
+              margin: 40px;
             }
+          </style>
+        </head>
+        <body>
+          ${clone.innerHTML}
+          <script>
+            window.onload = function () {
+              window.print();
+              window.onafterprint = function () {
+                window.close();
+              };
+            };
           </script>
         </body>
       </html>
@@ -43,11 +61,19 @@ const PrintCanvasSVG = () => {
   return (
     <div>
       <div ref={containerRef} id="print-container" style={{ padding: 20 }}>
-        {/* Your Canvas and SVG content */}
+        <h2>QR Code (Canvas)</h2>
+        <QRCode value="https://example.com" size={200} />
+
+        <h2>Simple SVG</h2>
+        <svg width="200" height="100">
+          <rect width="200" height="100" fill="#00bcd4" />
+          <text x="100" y="55" fontSize="18" textAnchor="middle" fill="white">SVG Text</text>
+        </svg>
       </div>
-      <button onClick={handlePrint}>Print Canvas & SVG</button>
+
+      <button onClick={handlePrint}>Print QR Code & SVG</button>
     </div>
   );
 };
 
-export default PrintCanvasSVG;
+export default PrintCanvasAndSVG;
