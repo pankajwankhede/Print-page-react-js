@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>React Micro App Loader</title>
+</head>
+<body>
+
+  <div id="react-root"></div>
+
+  <script>
+    // Micro props to pass into React app
+    const microProps = {
+      userId: '12345',
+      token: 'jwt-token-here',
+      theme: 'dark',
+      onClose: () => {
+        console.log('Close callback called');
+      }
+    };
+
+    // Load React bundle via API
+    fetch('/api/react-bundle')
+      .then(res => res.json())
+      .then(data => loadScript(data.jsBundle))
+      .catch(err => console.error(err));
+
+    function loadScript(src) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+
+      script.onload = () => {
+        console.log('Bundle loaded');
+
+        if (
+          window.MyReactApp &&
+          typeof window.MyReactApp.getApplication === 'function'
+        ) {
+          // 🔥 Call method inside bundle
+          window.MyReactApp.getApplication(microProps);
+        } else {
+          console.error('getApplication() not found in bundle');
+        }
+      };
+
+      document.body.appendChild(script);
+    }
+  </script>
+
+</body>
+</html>
