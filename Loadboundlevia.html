@@ -1,52 +1,61 @@
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
+<div class="header">
+  <h2>${brandName}</h2>
+
+  <c:if test="${not empty homeDTO.userDetails}">
+    <span>Welcome, ${homeDTO.userDetails.userName}</span>
+
+    <form action="/logout" method="post" style="display:inline;">
+      <input type="hidden" name="clientId" value="${clientId}" />
+      <button type="submit">Logout</button>
+    </form>
+  </c:if>
+
+  <div class="nav">
+    <c:if test="${showSupportLink}">
+      <a href="/support?clientId=${clientId}">Support</a>
+    </c:if>
+  </div>
+</div>
+<hr/>
+
+  ===base====
+  <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>React Micro App Loader</title>
+    <title><c:out value="${pageTitle}" /></title>
 </head>
 <body>
 
-  <div id="react-root"></div>
+<!-- HEADER -->
+<jsp:include page="/WEB-INF/JSP/layout/header.jsp" />
 
-  <script>
-    // Micro props to pass into React app
-    const microProps = {
-      userId: '12345',
-      token: 'jwt-token-here',
-      theme: 'dark',
-      onClose: () => {
-        console.log('Close callback called');
-      }
-    };
+<!-- BODY -->
+<div class="container">
+    <jsp:include page="${bodyView}" />
+</div>
 
-    // Load React bundle via API
-    fetch('/api/react-bundle')
-      .then(res => res.json())
-      .then(data => loadScript(data.jsBundle))
-      .catch(err => console.error(err));
-
-    function loadScript(src) {
-      const script = document.createElement('script');
-      script.src = src;
-      script.async = true;
-
-      script.onload = () => {
-        console.log('Bundle loaded');
-
-        if (
-          window.MyReactApp &&
-          typeof window.MyReactApp.getApplication === 'function'
-        ) {
-          // 🔥 Call method inside bundle
-          window.MyReactApp.getApplication(microProps);
-        } else {
-          console.error('getApplication() not found in bundle');
-        }
-      };
-
-      document.body.appendChild(script);
-    }
-  </script>
+<!-- FOOTER -->
+<jsp:include page="/WEB-INF/JSP/layout/footer.jsp" />
 
 </body>
 </html>
+=====================footer=====================
+
+  <hr/>
+<div class="footer">
+    © 2026 Company Name
+</div>
+
+  ========
+   ModelAndView mv = new ModelAndView("layout/base");
+    mv.addObject("pageTitle", "Login");
+    mv.addObject("clientId", clientId);
+    mv.addObject("state", state);
+
+    // 🔑 this decides which body JSP loads
+    mv.addObject("bodyView", "/WEB-INF/JSP/login/login.jsp");
