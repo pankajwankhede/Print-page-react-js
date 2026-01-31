@@ -59,3 +59,87 @@
 
     // 🔑 this decides which body JSP loads
     mv.addObject("bodyView", "/WEB-INF/JSP/login/login.jsp");
+
+
+  ========================
+
+
+  <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<section class="card">
+  <div class="card__grid">
+
+    <!-- Left copy -->
+    <div class="copy">
+      <h1 class="copy__title">
+        Welcome to<br/>
+        COMP NAME &amp;<br/>
+        COMP NAME
+      </h1>
+
+      <p class="copy__desc">
+        Please sign in using your COMP NAME 
+      </p>
+
+      <p class="copy__cta">
+        Interested in offering a financing program?<br/>
+        <a href="<c:url value='/learn-more'/>">Learn more here</a>
+      </p>
+    </div>
+
+    <!-- Right form -->
+    <div class="panel">
+      <h2 class="panel__title">Sign In</h2>
+
+      <c:if test="${not empty errorMessage}">
+        <div class="alert alert--error">
+          <c:out value="${errorMessage}"/>
+        </div>
+      </c:if>
+
+      <form class="form" method="post" action="<c:url value='/login'/>">
+        <c:if test="${not empty _csrf}">
+          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        </c:if>
+
+        <label class="field">
+          <div class="field__control">
+            <span class="field__icon" aria-hidden="true">👤</span>
+            <input class="field__input" type="text" name="username" placeholder="Username"
+                   autocomplete="username" required />
+          </div>
+          <a class="field__help" href="<c:url value='/forgot-username'/>">Forgot your username?</a>
+        </label>
+
+        <label class="field">
+          <div class="field__control">
+            <span class="field__icon" aria-hidden="true">🔒</span>
+            <input class="field__input" type="password" name="password" placeholder="Password"
+                   autocomplete="current-password" required />
+          </div>
+          <a class="field__help" href="<c:url value='/forgot-password'/>">Forgot your password?</a>
+        </label>
+
+        <button class="btn btn--primary" type="submit">SIGN IN</button>
+      </form>
+
+      <div class="register">
+        <div class="register__title">Registration</div>
+        <div class="register__subtitle">Not yet enrolled?</div>
+        <a class="btn btn--outline" href="<c:url value='/register'/>">REGISTER NOW</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+
+  
+
+  
